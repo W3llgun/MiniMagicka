@@ -1,44 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum Type
-{
-	Feu,
-	Eau,
-	Terre
-}
 
-public abstract class Element : MonoBehaviour{
-
-	public Type type;
+public abstract class Element {
+	
 	public float damage = 10;
-	public Element[] isWeak = null;
-	public Element[] isStrong = null;
+	public System.Type[] isStrong = null;
 
-	public bool isWeakAgainst(Type element)
+	public Element()
 	{
-		foreach (var item in isWeak)
+
+	}
+
+	bool isStrongAgainst(Element element)
+	{
+		if(isStrong != null)
 		{
-			if (item.type == element)
-				return true;
+			System.Type type = element.GetType();
+			foreach (var item in isStrong)
+			{
+				if (item == type)
+					return true;
+			}
 		}
 		return false;
 	}
 
-	public bool isStrongAgainst(Type element)
+	public float dealDamage(Element element)
 	{
-		foreach (var item in isStrong)
+		if(isStrongAgainst(element))
 		{
-			if (item.type == element)
-				return true;
+			return damage;
 		}
-		return false;
+		return 0;
 	}
 
-	public float dealDamage()
+	public virtual Element combine(Element element)
 	{
-		return damage;
+		return this;
 	}
-
-	public abstract void combine(Element element);
 }

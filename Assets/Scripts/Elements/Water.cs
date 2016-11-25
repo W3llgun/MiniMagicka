@@ -4,23 +4,19 @@ using System;
 
 public class Water : Element {
 
-	public override void combine(Element element)
+	public Water(): base()
 	{
-		
+		isStrong = new System.Type[] { typeof(Fire) };
 	}
+	
 
-	public void combine(Fire element)
+	public Element combine(Fire element)
 	{
-		Debug.Log("Feu");
+		return new Steam();
 	}
-
-	public void combine(Water element)
+	
+	public Element combine(Earth element)
 	{
-		Debug.Log("Feu");
-	}
-
-	public void combine(Earth element)
-	{
-		Debug.Log("Feu");
+		return new Mud();
 	}
 }
