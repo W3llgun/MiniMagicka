@@ -8,7 +8,12 @@ public class Earth : Element {
 	{
 		isStrong = new System.Type[] { typeof(Water) };
 	}
-	
+
+	public override Element combine(Element element)
+	{
+		return this;
+	}
+
 	public Element combine(Fire element)
 	{
 		return new Meteor();

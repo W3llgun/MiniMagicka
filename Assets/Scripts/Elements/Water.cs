@@ -8,7 +8,11 @@ public class Water : Element {
 	{
 		isStrong = new System.Type[] { typeof(Fire) };
 	}
-	
+
+	public override Element combine(Element element)
+	{
+		return this;
+	}
 
 	public Element combine(Fire element)
 	{
