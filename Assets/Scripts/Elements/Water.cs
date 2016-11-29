@@ -6,21 +6,18 @@ public class Water : Element {
 
 	public Water(): base()
 	{
-		isStrong = new System.Type[] { typeof(Fire) };
+		isStrong = new elementType[] {elementType.fire};
+        type = elementType.water;
 	}
 
 	public override Element combine(Element element)
 	{
-		return this;
-	}
+        switch (element.type)
+        {
+            case elementType.earth: return new Mud();
+            case elementType.fire: return new Steam();
+            default: return this;
+        }
+    }
 
-	public Element combine(Fire element)
-	{
-		return new Steam();
-	}
-	
-	public Element combine(Earth element)
-	{
-		return new Mud();
-	}
 }

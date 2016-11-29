@@ -1,11 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum elementType
+{
+    none,
+    fire,
+    water,
+    earth,
+    steam,
+    meteor,
+    mud
+}
+
 
 public abstract class Element {
 	
 	public float damage = 10;
-	public System.Type[] isStrong = null;
+	public elementType[] isStrong = null;
+
+    public elementType type;
 
 	public Element()
 	{
@@ -16,12 +29,10 @@ public abstract class Element {
 	{
 		if(isStrong != null)
 		{
-			System.Type type = element.GetType();
-			foreach (var item in isStrong)
-			{
-				if (item == type)
-					return true;
-			}
+			for(int i = 0; i < isStrong.Length; ++i)
+            {
+                if (isStrong[i] == element.type) return true;
+            }
 		}
 		return false;
 	}

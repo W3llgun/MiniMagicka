@@ -6,7 +6,8 @@ public class Steam : Element {
 
 	public Steam(): base()
 	{
-		isStrong = new System.Type[] { typeof(Meteor) };
+        isStrong = new elementType[] { elementType.meteor };
+        type = elementType.steam;
 	}
 	
 }

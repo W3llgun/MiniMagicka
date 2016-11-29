@@ -12,7 +12,7 @@ public enum Position
 
 public class Player : MonoBehaviour {
 	static float LANE_OFFSET = 2;
-	Fire feu;
+
 	Dictionary<Position, Lane> lanes;
 	Lane currentLane = null;
 
@@ -20,8 +20,9 @@ public class Player : MonoBehaviour {
 	public float spellSpeed = 10;
 	public float cooldown = 0.3f;
 
-	Element[] currentCast = new Element[] { null, null };
-	bool canCastSpell = true;
+    Element castElement;
+
+    bool canCastSpell = true;
 
 	// Use this for initialization
 	void Awake () {
@@ -55,7 +56,7 @@ public class Player : MonoBehaviour {
 		}
 		if (Input.GetKeyDown(KeyCode.E))
 		{
-			addElement(new Mud());
+			addElement(new Earth());
 		}
 
 		if (Input.GetMouseButtonDown(0) && canCastSpell)
@@ -70,31 +71,19 @@ public class Player : MonoBehaviour {
 
 	void resetSpell()
 	{
-		for(int i=0; i< currentCast.Length; i++)
-		{
-			currentCast[i] = null;
-		}
+        castElement = null;
 	}
 
 	void castSpell()
 	{
-		Element finalElement;
-		if (currentCast[0] == null)
+		if (castElement == null)
 		{
+            Debug.LogFormat("<color=#2550F0>I cannot cast a spell without element.</color>");
 			return;
 		}
-		else
-		{
-			finalElement = currentCast[0];
-			if (currentCast[1] != null)
-			{
-				finalElement = finalElement.combine(currentCast[1]);
-			}
-		}
-		Debug.Log(currentCast[0].GetType()+" "+currentCast[1].GetType());
-		Debug.Log("spell: "+ finalElement.GetType());
+        Debug.Log("Launching " + castElement.GetType());
 		GameObject go = (GameObject)Instantiate(spell, this.transform.position, this.transform.rotation);
-		go.GetComponent<Spell>().element = finalElement;
+		go.GetComponent<Spell>().element = castElement;
 		go.transform.LookAt(currentLane.endLane);
 		go.GetComponent<Rigidbody2D>().velocity = go.transform.forward * spellSpeed;
 
@@ -111,10 +100,13 @@ public class Player : MonoBehaviour {
 
 	void addElement(Element elem)
 	{
-		if (currentCast[0] == null)
-			currentCast[0] = elem;
-		else
-			currentCast[1] = elem;
+        if(castElement == null)
+        {
+            castElement = elem;
+        } else
+        {
+            castElement = castElement.combine(elem);
+        }
 	}
 
 	void updateLane(Vector3 mousePosition)

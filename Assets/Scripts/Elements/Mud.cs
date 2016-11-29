@@ -6,6 +6,7 @@ public class Mud : Element {
 
 	public Mud(): base()
 	{
-		isStrong = new System.Type[] { typeof(Steam) };
+		isStrong = new elementType[] {elementType.steam};
+        type = elementType.mud;
 	}
 }
