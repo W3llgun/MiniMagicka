@@ -17,8 +17,10 @@ public class EnemyDirector : MonoBehaviour {
     public EnemyDirectorParameters param = new EnemyDirectorParameters();
 
     private int currentEnemyStock = 0;
+    private float currentRestockCooldown = 0f;
 
-    private float currentEnemyLaunchCooldown = 0f;
+    private float currentLaunchCooldown = 0f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -27,8 +29,19 @@ public class EnemyDirector : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    
+        updateCooldowns();
 	}
+
+    private void updateCooldowns()
+    {
+        currentLaunchCooldown = Mathf.Max(currentLaunchCooldown - Time.deltaTime, 0f);
+        currentRestockCooldown = Mathf.Max(currentRestockCooldown - Time.deltaTime, 0f);
+        if(currentRestockCooldown <= 0f)
+        {
+            currentEnemyStock = Mathf.Min(currentEnemyStock + 1, param.maxEnemyStock);
+        }
+    }
+   
 
     protected void createEnemy(Lane lane)
     {
