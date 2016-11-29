@@ -145,4 +145,9 @@ public class Player : MonoBehaviour {
 		currentLane = lanes[pos];
 		currentLane.ActivateLane(true);
 	}
+
+    public void damage(float amount)
+    {
+
+    }
 }

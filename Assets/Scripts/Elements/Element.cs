@@ -15,7 +15,6 @@ public enum elementType
 
 public abstract class Element {
 	
-	public float damage = 10;
 	public elementType[] isStrong = null;
 
     public elementType type;
@@ -37,13 +36,23 @@ public abstract class Element {
 		return false;
 	}
 
-	public float dealDamage(Element element)
+    /// <summary>
+    /// Returns the damage received, if this element is the one dealing the damages.
+    /// </summary>
+    /// <param name="element">element that will receives the damage.</param>
+    /// <returns>The new damage value.</returns>
+	public float getDamageAgainst(Element element, float amount)
 	{
 		if(isStrongAgainst(element))
 		{
-			return damage;
-		}
-		return 0;
+            //If we are strong, deals tripled damages.
+			return amount *3.0f;
+		} else if (element.isStrongAgainst(this))
+        {
+            //If we're weak, we does no damage.
+            return 0f;
+        }
+		return amount;
 	}
 
 	public virtual Element combine(Element element)
