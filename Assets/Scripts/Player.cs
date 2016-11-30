@@ -84,8 +84,7 @@ public class Player : MonoBehaviour {
         Debug.Log("Launching " + castElement.GetType());
 		GameObject go = (GameObject)Instantiate(spell, this.transform.position, this.transform.rotation);
 		go.GetComponent<Spell>().element = castElement;
-		go.transform.LookAt(currentLane.endLane);
-		go.GetComponent<Rigidbody2D>().velocity = go.transform.forward * spellSpeed;
+		go.GetComponent<Rigidbody2D>().velocity = (currentLane.endLane.position - this.transform.position).normalized * spellSpeed;
 
 		StartCoroutine(waitCooldown());
 	}

@@ -11,4 +11,14 @@ public class Spell : MonoBehaviour {
 	{
 		Destroy(this.gameObject, lifeTime);
 	}
+
+    void OnTriggerEnter2D(Collider2D c)
+    {
+        Enemy e = c.GetComponent<Enemy>();
+        if(e)
+        {
+            e.damage(element, damagesInflicted);
+        }
+        this.gameObject.SetActive(false);
+    }
 }

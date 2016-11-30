@@ -15,7 +15,15 @@ public class Enemy : MonoBehaviour {
     public float life = 3f;
     public float damagesInflicted = 1f;
     public Element element;
-    
+
+    private EnemyDirector master;
+
+    public EnemyDirector linkedDirector
+    {
+        private get { return master; }
+        set { master = value; }
+    }
+
 	// Use this for initialization
 	void Start () {
 	
@@ -27,17 +35,20 @@ public class Enemy : MonoBehaviour {
 
     public void aimTarget(Player p)
     {
-        this.GetComponent<Rigidbody2D>().velocity = (this.transform.position - p.transform.position).normalized
+        this.GetComponent<Rigidbody2D>().velocity = (p.transform.position - this.transform.position).normalized
                                                         * Random.Range(param.minSpeed, param.maxSpeed);
     }
 
-    void OnCollisionEnter(Collision c)
+
+    void OnTriggerEnter2D(Collider2D c)
     {
-        Player p = c.collider.GetComponent<Player>();
+        Player p = c.GetComponent<Player>();
         if(p != null)
         {
-            p.damage(damagesInflicted);            
+            p.damage(damagesInflicted);
+            die(true);
         }
+
     }
 
     /// <summary>
@@ -51,13 +62,17 @@ public class Enemy : MonoBehaviour {
         life = Mathf.Max(life - amount, 0f);
         if(life <= 0f)
         {
-            die();
+            die(false);
         }
     }
 
-    public void die()
+    public void die(bool selfDestroy)
     {
         Destroy(this.gameObject);
+        if (!selfDestroy)
+        {
+            master.informDeath(this);
+        }
     }
 
 }
