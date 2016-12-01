@@ -12,20 +12,24 @@ public enum Position
 
 public class Player : MonoBehaviour {
 	static float LANE_OFFSET = 2;
-
+	static float SPELL_HEIGH_OFFSET = -2;
 	Dictionary<Position, Lane> lanes;
 	Lane currentLane = null;
 
 	public GameObject spell;    // prefab for a spell
 	public float spellSpeed = 10;
-	public float cooldown = 0.3f;
+	public float attackSpeed = 0.3f;
+	public float maxLife = 10;
+	public float currentLife = 0;
 
     Element castElement;
+	PlayerDisplay display;
 
     bool canCastSpell = true;
-
-	// Use this for initialization
+	
 	void Awake () {
+		currentLife = maxLife;
+		display = GetComponentInChildren<PlayerDisplay>();
 		lanes = new Dictionary<Position, Lane>();
 		Lane[] childLanes = GetComponentsInChildren<Lane>();
 		foreach (Lane l in childLanes)
@@ -65,13 +69,14 @@ public class Player : MonoBehaviour {
 		}
 		else if (Input.GetMouseButtonDown(1))
 		{
-			// Cancel
+			resetSpell();
 		}
 	}
 
 	void resetSpell()
 	{
         castElement = null;
+		display.updateElement(null);
 	}
 
 	void castSpell()
@@ -82,7 +87,7 @@ public class Player : MonoBehaviour {
 			return;
 		}
         Debug.Log("Launching " + castElement.GetType());
-		GameObject go = (GameObject)Instantiate(spell, this.transform.position, this.transform.rotation);
+		GameObject go = (GameObject)Instantiate(spell, this.transform.position+ new Vector3(0, 0, SPELL_HEIGH_OFFSET), this.transform.rotation);
 		go.GetComponent<Spell>().element = castElement;
 		go.GetComponent<Rigidbody2D>().velocity = (currentLane.endLane.position - this.transform.position).normalized * spellSpeed;
 
@@ -93,7 +98,7 @@ public class Player : MonoBehaviour {
 	{
 		resetSpell();
 		canCastSpell = false;
-		yield return new WaitForSeconds(cooldown);
+		yield return new WaitForSeconds(attackSpeed);
 		canCastSpell = true;
 	}
 
@@ -106,6 +111,8 @@ public class Player : MonoBehaviour {
         {
             castElement = castElement.combine(elem);
         }
+		if(castElement != null)
+		display.updateElement(castElement);
 	}
 
 	void updateLane(Vector3 mousePosition)
@@ -125,7 +132,7 @@ public class Player : MonoBehaviour {
 				switchLane(Position.Left);
 			}
 		}
-		else if(!isHorizontal && isVertical)
+		else if(isVertical)
 		{
 			if (mousePosition.y > pos.y)
 			{
@@ -147,6 +154,14 @@ public class Player : MonoBehaviour {
 
     public void damage(float amount)
     {
-
+		currentLife -= amount;
+		display.updateLife(currentLife / maxLife);
+		if (currentLife <= 0)
+		{
+			// LOST
+			GetComponentInChildren<ReloadLevel>().showReloadLevel();
+		}
+		
     }
+	
 }
