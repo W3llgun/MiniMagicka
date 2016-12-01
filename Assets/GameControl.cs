@@ -8,7 +8,7 @@ public class GameControl : MonoBehaviour {
 	float currentEscape = 0;
 	// Use this for initialization
 	void Start () {
-		if(!panelControl) panelControl = transform.Find("PanelCombo").gameObject;
+		if(!panelControl) panelControl = transform.Find("Parchemin").gameObject;
 	}
 	
 	// Update is called once per frame
@@ -16,17 +16,26 @@ public class GameControl : MonoBehaviour {
 		if(Input.GetKey(KeyCode.Tab))
 		{
 			if (!panelControl.activeSelf)
+			{
+				Time.timeScale = 0;
 				panelControl.SetActive(true);
+			}
 			return;
 		}
 		else
 		{
-			if(panelControl.activeSelf)
-			panelControl.SetActive(false);
+			
+			if (panelControl.activeSelf)
+			{
+				Time.timeScale = 1;
+				panelControl.SetActive(false);
+			}
+			
 		}
 
 		if (Input.GetKey(KeyCode.Escape))
 		{
+			
 			currentEscape += Time.deltaTime;
 			if(currentEscape>escapeTime)
 			{

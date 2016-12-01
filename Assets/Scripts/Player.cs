@@ -22,12 +22,14 @@ public class Player : MonoBehaviour {
 	public float maxLife = 10;
 	public float currentLife = 0;
 
+	SpriteRenderer playerSprite;
     Element castElement;
 	PlayerDisplay display;
 
     bool canCastSpell = true;
 	
 	void Awake () {
+		playerSprite = GetComponent<SpriteRenderer>();
 		currentLife = maxLife;
 		display = GetComponentInChildren<PlayerDisplay>();
 		lanes = new Dictionary<Position, Lane>();
@@ -125,10 +127,12 @@ public class Player : MonoBehaviour {
 		{
 			if(mousePosition.x > pos.x)
 			{
+				playerSprite.flipX = true;
 				switchLane(Position.Right);
 			}
 			else
 			{
+				playerSprite.flipX = false;
 				switchLane(Position.Left);
 			}
 		}
