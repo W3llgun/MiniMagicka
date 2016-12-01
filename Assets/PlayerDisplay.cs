@@ -16,18 +16,22 @@ public class PlayerDisplay : MonoBehaviour {
 		elementImage = currentElem.GetComponentInChildren<Image>();
 	}
 
-	public void updateElement(Element elem)
+	public void updateElement(Element elem, Sprite sprt)
 	{
 		if(elem == null)
 		{
 			elementName.text = "";
+			elementImage.sprite = null;
 			elementImage.enabled = false;
 		}
 		else
 		{
 			elementName.text = "" + System.Enum.GetName(typeof(elementType), elem.type);
 			elementImage.enabled = true;
-			// elementImage
+			if(sprt)
+				elementImage.sprite = sprt;
+			else
+				elementImage.sprite = null;
 		}
 	}
 

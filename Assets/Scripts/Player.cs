@@ -10,6 +10,39 @@ public enum Position
 	Bottom,
 }
 
+[System.Serializable]
+public class ElementSprite
+{
+	public Sprite fire = null;
+	public Sprite water = null;
+	public Sprite earth = null;
+	public Sprite mud = null;
+	public Sprite steam = null;
+	public Sprite meteor = null;
+
+	public Sprite getSprite(elementType type)
+	{
+		switch(type)
+		{
+			case elementType.fire:
+				return fire;
+			case elementType.water:
+				return water;
+			case elementType.earth:
+				return earth;
+			case elementType.steam:
+				return steam;
+			case elementType.mud:
+				return mud;
+			case elementType.meteor:
+				return meteor;
+			default:
+				return null;
+		}
+				
+	}
+}
+
 public class Player : MonoBehaviour {
 	static float LANE_OFFSET = 2;
 	static float SPELL_HEIGH_OFFSET = -2;
@@ -21,7 +54,7 @@ public class Player : MonoBehaviour {
 	public float attackSpeed = 0.3f;
 	public float maxLife = 10;
 	public float currentLife = 0;
-
+	public ElementSprite elementGraph;
 	SpriteRenderer playerSprite;
     Element castElement;
 	PlayerDisplay display;
@@ -78,7 +111,7 @@ public class Player : MonoBehaviour {
 	void resetSpell()
 	{
         castElement = null;
-		display.updateElement(null);
+		display.updateElement(null,null);
 	}
 
 	void castSpell()
@@ -92,6 +125,10 @@ public class Player : MonoBehaviour {
 		GameObject go = (GameObject)Instantiate(spell, this.transform.position+ new Vector3(0, 0, SPELL_HEIGH_OFFSET), this.transform.rotation);
 		go.GetComponent<Spell>().element = castElement;
 		go.GetComponent<Rigidbody2D>().velocity = (currentLane.endLane.position - this.transform.position).normalized * spellSpeed;
+		
+		Sprite sprt = elementGraph.getSprite(castElement.type);
+		if(sprt && go.GetComponent<SpriteRenderer>())
+		go.GetComponent<SpriteRenderer>().sprite = sprt;
 
 		StartCoroutine(waitCooldown());
 	}
@@ -114,7 +151,7 @@ public class Player : MonoBehaviour {
             castElement = castElement.combine(elem);
         }
 		if(castElement != null)
-		display.updateElement(castElement);
+		display.updateElement(castElement, elementGraph.getSprite(castElement.type));
 	}
 
 	void updateLane(Vector3 mousePosition)
