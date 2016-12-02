@@ -14,7 +14,9 @@ public enum elementType
 
 
 public abstract class Element {
-	
+
+    const float VS_WEAK_DAMAGE_MULTIPLIER = 4.0f;
+
 	public elementType[] isStrong = null;
 
     public elementType type;
@@ -46,7 +48,7 @@ public abstract class Element {
 		if(isStrongAgainst(element))
 		{
             //If we are strong, deals tripled damages.
-			return amount *3.0f;
+			return amount * VS_WEAK_DAMAGE_MULTIPLIER;
 		} else if (element.isStrongAgainst(this))
         {
             //If we're weak, we does no damage.

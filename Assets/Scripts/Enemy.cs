@@ -11,7 +11,7 @@ public class EnemyParam
 
 public class Enemy : MonoBehaviour {
 
-    EnemyParam param = new EnemyParam();
+    public EnemyParam param = new EnemyParam();
     public float life = 3f;
     public float damagesInflicted = 1f;
     public Element element;
