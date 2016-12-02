@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System;
 
 [System.Serializable]
 public class EnemyDirectorParameters
@@ -15,15 +13,28 @@ public class EnemyDirectorParameters
     public int maxEnemyStock = 5;
 }
 
+public class spawnChances
+{
+    public Enemy e;
+    public int chances = 4;
+
+    public spawnChances(Enemy e, int chance)
+    {
+        this.e = e; this.chances = chance;
+    }
+}
+
 public class EnemyDirector : MonoBehaviour {
 
     public EnemyDirectorParameters param = new EnemyDirectorParameters();
 
     public List<Transform> spawnPoints = new List<Transform>();
 
-    public GameObject enemyPrefab;
+    public List<GameObject> enemyPrefabs;
 
     public Player player;
+
+    private List<spawnChances> enemySpawnChances;
 
     private int currentEnemyStock = 0;
     private float currentRestockCooldown = 0f;
@@ -34,7 +45,11 @@ public class EnemyDirector : MonoBehaviour {
     void Awake()
     {
         Debug.Assert(spawnPoints.Count > 0, "No enemy spawn point!");
- 
+        enemySpawnChances = new List<spawnChances>(enemyPrefabs.Count);
+        for(int i = 0; i < enemyPrefabs.Count; ++i)
+        {
+            enemySpawnChances.Add(new spawnChances(enemyPrefabs[i].GetComponent<Enemy>(), 4));
+        }
     }
 
 	// Use this for initialization
@@ -47,26 +62,29 @@ public class EnemyDirector : MonoBehaviour {
         updateCooldowns();
         if(canLaunchEnemy())
         {
-            createEnemy(chooseEnemyElement());
+            createEnemy(chooseEnemy());
         }
 	}
 
-    private Element chooseEnemyElement()
+    private int chooseEnemy()
     {
-        Element chosenElement;
-        Array values = Enum.GetValues(typeof(elementType));
-        elementType i = (elementType)values.GetValue(UnityEngine.Random.Range(1, values.Length));
-        switch(i)
+        int cumulativeChances = 0;
+        int chosenRandom = 0;
+        int maxRandom = 0;
+        for(int i = 0; i < enemySpawnChances.Count; ++i)
         {
-            case elementType.earth: chosenElement = new Earth(); break;
-            case elementType.fire: chosenElement = new Fire(); break;
-            case elementType.meteor: chosenElement = new Meteor(); break;
-            case elementType.mud: chosenElement = new Mud(); break;
-            case elementType.steam: chosenElement = new Steam(); break;
-            case elementType.water: chosenElement = new Water(); break;
-            default: throw new System.Exception();
+            maxRandom += enemySpawnChances[i].chances;
         }
-        return chosenElement;
+        chosenRandom = Random.Range(0, maxRandom);
+        for(int i = 0; i < enemySpawnChances.Count; ++i)
+        {
+            cumulativeChances += enemySpawnChances[i].chances;
+            if(cumulativeChances >= chosenRandom)
+            {
+                return i;
+            }
+        }
+        return enemyPrefabs.Count-1;
     }
 
     private void updateCooldowns()
@@ -85,19 +103,20 @@ public class EnemyDirector : MonoBehaviour {
         return currentLaunchCooldown <= 0f && currentEnemyStock >= 1;
     }
 
-    protected void createEnemy(Element e)
+    protected void createEnemy(int enemyNumber)
     {
-        int spawnPosition = UnityEngine.Random.Range(0, spawnPoints.Count);
+        int spawnPosition = Random.Range(0, spawnPoints.Count);
 
-        GameObject created = Instantiate(enemyPrefab, spawnPoints[spawnPosition].position, spawnPoints[spawnPosition].rotation) as GameObject;
+        GameObject created = Instantiate(enemyPrefabs[enemyNumber], spawnPoints[spawnPosition].position, spawnPoints[spawnPosition].rotation) as GameObject;
 
         if (created != null)
         {
             Enemy spawnedEnemy = created.GetComponent<Enemy>();
             Debug.Assert(spawnedEnemy != null, "enemy prefab does not contain enemy script!");
-            spawnedEnemy.element = e;
+            spawnedEnemy.init(enemyNumber);
             spawnedEnemy.linkedDirector = this;
             spawnedEnemy.aimTarget(player);
+    
             Debug.Log("Ah! You cannot defeat my " + spawnedEnemy.element.type +" minion!");
             currentEnemyStock--;
             currentLaunchCooldown = param.enemyLaunchCooldown;
@@ -110,6 +129,22 @@ public class EnemyDirector : MonoBehaviour {
     public void informDeath(Enemy e)
     {
         Debug.LogFormat("<b>THIS. IS. IMPOSSIBLE!</b>");
-        
+        reduceSpawnChances(e.enemyTypeNumber);
+    }
+
+    public void reduceSpawnChances(int i)
+    {
+        Debug.Assert(i < enemySpawnChances.Count && i >= 0);
+        if (enemySpawnChances[i].chances > 1)
+        {
+            enemySpawnChances[i].chances--;
+            if (i < enemySpawnChances.Count-1)
+            {
+                enemySpawnChances[i+1].chances++;
+            } else if (i == enemySpawnChances.Count-1)
+            {
+                enemySpawnChances[0].chances++;
+            }
+        }
     }
 }

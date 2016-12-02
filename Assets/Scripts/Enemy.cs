@@ -15,13 +15,20 @@ public class Enemy : MonoBehaviour {
     public float life = 3f;
     public float damagesInflicted = 1f;
     public Element element;
-
+    public elementType type;
     private EnemyDirector master;
+
+    public int enemyTypeNumber = 0;
 
     public EnemyDirector linkedDirector
     {
         private get { return master; }
         set { master = value; }
+    }
+
+    void Awake()
+    {
+
     }
 
 	// Use this for initialization
@@ -32,6 +39,21 @@ public class Enemy : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	}
+
+    public void init(int enemyNumber)
+    {
+        enemyTypeNumber = enemyNumber;
+        switch (type)
+        {
+            case elementType.earth: element = new Earth(); break;
+            case elementType.fire: element = new Fire(); break;
+            case elementType.meteor: element = new Meteor(); break;
+            case elementType.mud: element = new Mud(); break;
+            case elementType.steam: element = new Steam(); break;
+            case elementType.water: element = new Water(); break;
+            default: Debug.LogWarning("No element associated to enemy"); break;
+        }
+    }
 
     public void aimTarget(Player p)
     {
